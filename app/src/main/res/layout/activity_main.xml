@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:hint="License Plate"
             android:ems="10"
-            android:id="@+id/editText" />
+            android:id="@+id/licensePlateInput" />
 
         <EditText
             android:layout_width="match_parent"
@@ -37,20 +37,20 @@
             android:inputType="textPersonName"
             android:hint="Name"
             android:ems="10"
-            android:id="@+id/editText2" />
+            android:id="@+id/nameInput" />
 
-        <ImageView
+        <ImageButton
             android:src="@android:drawable/ic_menu_camera"
             android:layout_width="match_parent"
             android:layout_height="0px"
             android:layout_weight="1"
-            android:id="@+id/imageView" />
+            android:id="@+id/pictureInput"/>
 
         <Button
             android:text="Add"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/button"/>
+            android:id="@+id/confirmAdd"/>
 
     </LinearLayout>
 </LinearLayout>
