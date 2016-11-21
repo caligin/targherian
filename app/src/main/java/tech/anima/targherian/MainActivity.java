@@ -31,9 +31,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MainActivity extends Activity {
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+    public static final String PROVIDER_AUTHORITY = "tech.anima.targherian.imageprovider";
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String PROVIDER_AUTHORITY = "tech.anima.targherian.imageprovider";
     private final TargherianDatabaseOpener dbOpener = new TargherianDatabaseOpener(this);
     private final int defaultPictureButtonIcon = android.R.drawable.ic_menu_camera;
     private ImageButton pictureInput = null;
