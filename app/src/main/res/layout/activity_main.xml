@@ -4,53 +4,38 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="tech.anima.targherian.MainActivity"
     android:divider="?android:listDivider"
+    android:dividerPadding="2.5dp"
+    android:orientation="vertical"
     android:showDividers="middle"
-    android:dividerPadding="2.5dp">
+    tools:context="tech.anima.targherian.MainActivity">
 
-    <LinearLayout
+    <EditText
+        android:id="@+id/licensePlateInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <SearchView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
-    <LinearLayout
+        android:ems="10"
+        android:hint="License Plate" />
+
+    <EditText
+        android:id="@+id/nameInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Name"
+        android:inputType="textPersonName" />
+
+    <ImageButton
+        android:id="@+id/pictureInput"
         android:layout_width="match_parent"
         android:layout_height="0px"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:src="@android:drawable/ic_menu_camera" />
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="License Plate"
-            android:ems="10"
-            android:id="@+id/licensePlateInput" />
+    <Button
+        android:id="@+id/confirmAdd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add" />
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:hint="Name"
-            android:ems="10"
-            android:id="@+id/nameInput" />
-
-        <ImageButton
-            android:src="@android:drawable/ic_menu_camera"
-            android:layout_width="match_parent"
-            android:layout_height="0px"
-            android:layout_weight="1"
-            android:id="@+id/pictureInput"/>
-
-        <Button
-            android:text="Add"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/confirmAdd"/>
-
-    </LinearLayout>
 </LinearLayout>

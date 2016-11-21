@@ -1,8 +1,11 @@
 package tech.anima.targherian;
 
 import android.app.Activity;
+import android.app.SearchManager;
+import android.app.SearchableInfo;
 import android.content.ComponentName;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -13,10 +16,13 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -56,6 +62,19 @@ public class MainActivity extends Activity {
                 }
             });
         }
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        final MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
+        final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        final SearchView vehicleRegistrationSearch = (SearchView) menu.findItem(R.id.vehicleRegistrationSearch).getActionView();
+        final SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
+        vehicleRegistrationSearch.setSearchableInfo(searchableInfo);
+
+        return true;
     }
 
     private void dispatchTakePictureIntent() {
@@ -126,11 +145,11 @@ public class MainActivity extends Activity {
         if (licensePlate.trim().isEmpty() && name.trim().isEmpty()) {
             // TODO: license can have moar validation to see if it's a valid one
             // TODO: is it true that either is enough or do we always want the license?
-            Toast.makeText(this, "Must provide either a license number or a name", Toast.LENGTH_LONG);
+            Toast.makeText(this, "Must provide either a license number or a name", Toast.LENGTH_LONG).show();
             return;
         }
         if (photoFile == null) {
-            Toast.makeText(this, "Must take a picture of the vehicle registration", Toast.LENGTH_LONG);
+            Toast.makeText(this, "Must take a picture of the vehicle registration", Toast.LENGTH_LONG).show();;
             return;
         }
         //store
@@ -139,17 +158,21 @@ public class MainActivity extends Activity {
         values.put(TargherianContract.VehicleEntry.LICENSE_PLATE_COLUMN, licensePlate);
         values.put(TargherianContract.VehicleEntry.NAME_COLUMN, name);
         values.put(TargherianContract.VehicleEntry.VEHICLE_REGISTRATION_URI_COLUMN, photoFile.getAbsolutePath());
-        final long newLineId = db.insert(TargherianContract.VehicleEntry.TABLE_NAME, null, values);// TODO: related to the note about uniq, there are alternative calls to insert, read docs!
-        if (newLineId == -1) {
-            // TODO handle error?
-            Log.e(TAG, "something went wrong with db insert, insert returned -1");
-            Toast.makeText(this, "Failed to save", Toast.LENGTH_LONG);
-            return;
+        try {
+            final long newLineId = db.insert(TargherianContract.VehicleEntry.TABLE_NAME, null, values);// TODO: related to the note about uniq, there are alternative calls to insert, read docs!
+            if (newLineId == -1) {
+                // TODO handle error?
+                Log.e(TAG, "something went wrong with db insert, insert returned -1");
+                Toast.makeText(this, "Failed to save", Toast.LENGTH_LONG).show();;
+                return;
+            }
+            //reset
+            licensePlateInput.getText().clear();
+            nameInput.getText().clear();
+            pictureInput.setImageResource(defaultPictureButtonIcon);
+        } finally {
+            db.close();
         }
-        //reset
-        licensePlateInput.getText().clear();
-        nameInput.getText().clear();
-        pictureInput.setImageResource(defaultPictureButtonIcon);
     }
 }
 
