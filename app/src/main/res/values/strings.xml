@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Targherian</string>
-    <string name="find_license_hint">Find by license plate</string>
+    <string name="find_name_hint">Find by name</string>
 </resources>

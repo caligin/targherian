@@ -1,25 +1,18 @@
 package tech.anima.targherian;
 
-import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.Toast;
 
 import java.io.File;
 
@@ -48,7 +41,7 @@ public class SearchResultsActivity extends ListActivity {
         }
         final String query = intent.getStringExtra(SearchManager.QUERY);
         //TODO: do this stuff async with a loadermanager
-        final Cursor licensePlateMatches = getLicensePlateMatches(query);
+        final Cursor nameMatches = getNameMatches(query);
 
         final String[] cursorFieldNames = {
                 TargherianContract.VehicleEntry.LICENSE_PLATE_COLUMN,
@@ -58,11 +51,11 @@ public class SearchResultsActivity extends ListActivity {
                 android.R.id.text1,
                 android.R.id.text2
         };
-        this.setListAdapter(new SimpleCursorAdapter(this, android.R.layout.two_line_list_item, licensePlateMatches, cursorFieldNames, viewFieldIds, 0));
+        this.setListAdapter(new SimpleCursorAdapter(this, android.R.layout.two_line_list_item, nameMatches, cursorFieldNames, viewFieldIds, 0));
     }
 
-    public Cursor getLicensePlateMatches(String query) {
-        final String selection = TargherianContract.VehicleEntry.LICENSE_PLATE_COLUMN + " LIKE ?";
+    public Cursor getNameMatches(String query) {
+        final String selection = TargherianContract.VehicleEntry.NAME_COLUMN + " LIKE ?";
         final String[] selectionArgs = new String[]{query + "%"};
         final SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables(TargherianContract.VehicleEntry.TABLE_NAME);
