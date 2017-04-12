@@ -39,7 +39,7 @@ public class SearchResultsActivity extends ListActivity {
             Log.wtf(TAG, "received unrecognized intent action");
             throw new IllegalArgumentException("received unrecognized intent action");
         }
-        final String query = intent.getStringExtra(SearchManager.QUERY);
+        final String query = getQuery(intent);
         //TODO: do this stuff async with a loadermanager
         final Cursor nameMatches = getNameMatches(query);
 
@@ -54,12 +54,19 @@ public class SearchResultsActivity extends ListActivity {
         this.setListAdapter(new SimpleCursorAdapter(this, android.R.layout.two_line_list_item, nameMatches, cursorFieldNames, viewFieldIds, 0));
     }
 
+    private String getQuery(Intent intent) {
+        final String normalSearchQuery = intent.getStringExtra(SearchManager.QUERY);
+        if (normalSearchQuery != null) {
+            return normalSearchQuery;
+
+        }
+        return intent.getCharSequenceExtra("user_query").toString(); //wtf idk why but when using the hints it comes as a charsequence on a different key...
+    }
+
     public Cursor getNameMatches(String query) {
-        final String selection = TargherianContract.VehicleEntry.NAME_COLUMN + " LIKE ?";
-        final String[] selectionArgs = new String[]{query + "%"};
-        final SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables(TargherianContract.VehicleEntry.TABLE_NAME);
-        final Cursor cursor = builder.query(dbOpener.getReadableDatabase(), null, selection, selectionArgs, null, null, null);
+
+        final Cursor cursor = Queries.entriesByNamePartialMatch(dbOpener.getReadableDatabase(), query);
+
         if (cursor == null) {
             return null;
         }

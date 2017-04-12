@@ -46,6 +46,12 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <provider
+            android:name="tech.anima.targherian.NameSuggestionsProvider"
+            android:authorities="tech.anima.targherian.provider"
+            android:exported="false">
+        </provider>
+
     </application>
 
 </manifest>
