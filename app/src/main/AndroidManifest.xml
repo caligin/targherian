@@ -47,7 +47,7 @@
         </provider>
 
         <provider
-            android:name="tech.anima.targherian.NameSuggestionsProvider"
+            android:name="tech.anima.targherian.Provider"
             android:authorities="tech.anima.targherian.provider"
             android:exported="false">
         </provider>

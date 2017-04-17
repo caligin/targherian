@@ -10,9 +10,15 @@ public abstract class Queries {
     }
 
     public static Cursor entriesByNamePartialMatch(SQLiteDatabase db, String partialName, String[] projection) {
-        final String selection = TargherianContract.VehicleEntry.NAME_COLUMN + " LIKE ?";
+        final String selection = Contract.VehicleEntry.NAME_COLUMN + " LIKE ?";
         final String[] selectionArgs = new String[]{"%" + partialName + "%"};
-        return db.query(TargherianContract.VehicleEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+        return db.query(Contract.VehicleEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+    }
+
+    public static Cursor byId(SQLiteDatabase db, long id, String[] projection) {
+        final String selection = Contract.VehicleEntry._ID + " = ?";
+        final String[] selectionArgs = new String[]{Long.toString(id)};
+        return db.query(Contract.VehicleEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
     }
 
     public static String aliased(String column, String alias) {

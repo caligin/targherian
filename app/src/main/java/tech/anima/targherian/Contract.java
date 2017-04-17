@@ -2,7 +2,7 @@ package tech.anima.targherian;
 
 import android.provider.BaseColumns;
 
-public interface TargherianContract {
+public interface Contract {
     interface VehicleEntry extends BaseColumns {
         String TABLE_NAME = "vehicles";
         String LICENSE_PLATE_COLUMN = "license_plate";

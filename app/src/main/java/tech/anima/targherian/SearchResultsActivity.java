@@ -5,7 +5,6 @@ import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.FileProvider;
@@ -19,22 +18,26 @@ import java.io.File;
 public class SearchResultsActivity extends ListActivity {
 
     private static final String TAG = SearchResultsActivity.class.getSimpleName();
-    private final TargherianDatabaseOpener dbOpener = new TargherianDatabaseOpener(this);
+    private final DatabaseOpener dbOpener = new DatabaseOpener(this);
+    private static final CursorToViewMapping searchMappings = new CursorToViewMapping(
+            new String[]{Contract.VehicleEntry.LICENSE_PLATE_COLUMN, Contract.VehicleEntry.NAME_COLUMN},
+            new int[]{android.R.id.text1, android.R.id.text2}
+    );
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        handleIntent(getIntent());
+        dispatchIntent(getIntent());
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         // TODO: learn more about android:launchMode="singleTop"
-        handleIntent(intent);
+        dispatchIntent(intent);
     }
 
-    private void handleIntent(Intent intent) {
+    private void dispatchIntent(Intent intent) {
         if (!Intent.ACTION_SEARCH.equals(intent.getAction())) {
             Log.wtf(TAG, "received unrecognized intent action");
             throw new IllegalArgumentException("received unrecognized intent action");
@@ -43,15 +46,20 @@ public class SearchResultsActivity extends ListActivity {
         //TODO: do this stuff async with a loadermanager
         final Cursor nameMatches = getNameMatches(query);
 
-        final String[] cursorFieldNames = {
-                TargherianContract.VehicleEntry.LICENSE_PLATE_COLUMN,
-                TargherianContract.VehicleEntry.NAME_COLUMN
-        };
-        final int[] viewFieldIds = {
-                android.R.id.text1,
-                android.R.id.text2
-        };
-        this.setListAdapter(new SimpleCursorAdapter(this, android.R.layout.two_line_list_item, nameMatches, cursorFieldNames, viewFieldIds, 0));
+        this.setListAdapter(new SimpleCursorAdapter(this, android.R.layout.two_line_list_item, nameMatches, searchMappings.cursorFields, searchMappings.viewFields, 0));
+    }
+
+    public static class CursorToViewMapping {
+        public final String[] cursorFields;
+        public final int[] viewFields;
+
+        public CursorToViewMapping(String[] cursorFields, int[] viewFields) {
+            if (cursorFields.length != viewFields.length) {
+                throw new IllegalArgumentException("field arrays must be of the same size");
+            }
+            this.cursorFields = cursorFields;
+            this.viewFields = viewFields;
+        }
     }
 
     private String getQuery(Intent intent) {
@@ -63,14 +71,11 @@ public class SearchResultsActivity extends ListActivity {
         return intent.getCharSequenceExtra("user_query").toString(); //wtf idk why but when using the hints it comes as a charsequence on a different key...
     }
 
-    public Cursor getNameMatches(String query) {
-
+    private Cursor getNameMatches(String query) {
         final Cursor cursor = Queries.entriesByNamePartialMatch(dbOpener.getReadableDatabase(), query);
 
-        if (cursor == null) {
-            return null;
-        }
-        if (!cursor.moveToFirst()) {
+        // TODO should this be pushed down a level?
+        if (cursor != null && !cursor.moveToFirst()) {
             cursor.close();
             return null;
         }
@@ -80,16 +85,15 @@ public class SearchResultsActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        final String selection = TargherianContract.VehicleEntry._ID + " = ?";
-        final String[] projection = new String[]{TargherianContract.VehicleEntry.VEHICLE_REGISTRATION_URI_COLUMN};
-        final String[] selectionArgs = new String[]{Long.toString(id)};
-        final SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables(TargherianContract.VehicleEntry.TABLE_NAME);
-        final Cursor cursor = builder.query(dbOpener.getReadableDatabase(), projection, selection, selectionArgs, null, null, null);
+
+        final String[] projection = new String[]{Contract.VehicleEntry.VEHICLE_REGISTRATION_URI_COLUMN};
+        final Cursor cursor = Queries.byId(dbOpener.getReadableDatabase(), id, projection);
         if (cursor == null || !cursor.moveToFirst()) {
             throw new IllegalStateException("query by id failed");
         }
+
         final String picturePath = cursor.getString(0);
+
         final Uri pictureUri = FileProvider.getUriForFile(this, MainActivity.PROVIDER_AUTHORITY, new File(picturePath));
         final Intent viewImageIntent = new Intent();
         viewImageIntent.setAction(Intent.ACTION_VIEW);

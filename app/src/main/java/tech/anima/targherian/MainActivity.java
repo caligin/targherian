@@ -34,7 +34,7 @@ public class MainActivity extends Activity {
     public static final String PROVIDER_AUTHORITY = "tech.anima.targherian.imageprovider";
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final String TAG = MainActivity.class.getSimpleName();
-    private final TargherianDatabaseOpener dbOpener = new TargherianDatabaseOpener(this);
+    private final DatabaseOpener dbOpener = new DatabaseOpener(this);
     private final int defaultPictureButtonIcon = android.R.drawable.ic_menu_camera;
     private ImageButton pictureInput = null;
     private Button confirmAdd = null;
@@ -155,11 +155,11 @@ public class MainActivity extends Activity {
         //store
         final SQLiteDatabase db = dbOpener.getWritableDatabase();
         final ContentValues values = new ContentValues();
-        values.put(TargherianContract.VehicleEntry.LICENSE_PLATE_COLUMN, licensePlate);
-        values.put(TargherianContract.VehicleEntry.NAME_COLUMN, name);
-        values.put(TargherianContract.VehicleEntry.VEHICLE_REGISTRATION_URI_COLUMN, photoFile.getAbsolutePath());
+        values.put(Contract.VehicleEntry.LICENSE_PLATE_COLUMN, licensePlate);
+        values.put(Contract.VehicleEntry.NAME_COLUMN, name);
+        values.put(Contract.VehicleEntry.VEHICLE_REGISTRATION_URI_COLUMN, photoFile.getAbsolutePath());
         try {
-            final long newLineId = db.insert(TargherianContract.VehicleEntry.TABLE_NAME, null, values);// TODO: related to the note about uniq, there are alternative calls to insert, read docs!
+            final long newLineId = db.insert(Contract.VehicleEntry.TABLE_NAME, null, values);// TODO: related to the note about uniq, there are alternative calls to insert, read docs!
             if (newLineId == -1) {
                 // TODO handle error?
                 Log.e(TAG, "something went wrong with db insert, insert returned -1");
